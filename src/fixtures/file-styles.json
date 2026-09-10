@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "styles": [
+      {
+        "key": "stylekey1",
+        "file_key": "AbCdEfGhIjKlMnOpQrStUv",
+        "node_id": "10:1",
+        "style_type": "FILL",
+        "name": "Primary / 500",
+        "description": ""
+      },
+      {
+        "key": "stylekey2",
+        "file_key": "AbCdEfGhIjKlMnOpQrStUv",
+        "node_id": "10:2",
+        "style_type": "TEXT",
+        "name": "Body / Regular"
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+node_modules
+dist
+agent-tools
+coverage
+*.log
+*.pem
+*.key
+.DS_Store
+.idea
+.vscode
+.cursor/mcp.json
+mcp.local.json

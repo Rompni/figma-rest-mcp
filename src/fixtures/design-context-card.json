@@ -1,0 +1,79 @@
+{
+  "name": "Checkout",
+  "nodes": {
+    "2:1": {
+      "document": {
+        "id": "2:1",
+        "name": "Card",
+        "type": "FRAME",
+        "absoluteBoundingBox": { "x": 0, "y": 0, "width": 320, "height": 200 },
+        "layoutMode": "VERTICAL",
+        "primaryAxisAlignItems": "MIN",
+        "counterAxisAlignItems": "CENTER",
+        "primaryAxisSizingMode": "AUTO",
+        "counterAxisSizingMode": "FIXED",
+        "layoutSizingHorizontal": "FIXED",
+        "layoutSizingVertical": "HUG",
+        "itemSpacing": 12,
+        "paddingTop": 16,
+        "paddingRight": 16,
+        "paddingBottom": 16,
+        "paddingLeft": 16,
+        "cornerRadius": 8,
+        "fills": [{ "type": "SOLID", "color": { "r": 1, "g": 1, "b": 1, "a": 1 } }],
+        "children": [
+          {
+            "id": "3:1",
+            "name": "Headline",
+            "type": "TEXT",
+            "absoluteBoundingBox": { "x": 16, "y": 16, "width": 288, "height": 24 },
+            "characters": "Ship faster",
+            "style": {
+              "fontFamily": "Inter",
+              "fontWeight": 600,
+              "fontSize": 20,
+              "textAlignHorizontal": "CENTER",
+              "lineHeightPx": 24,
+              "lineHeightUnit": "PIXELS",
+              "letterSpacing": 0
+            },
+            "fills": [{ "type": "SOLID", "color": { "r": 0.067, "g": 0.067, "b": 0.067, "a": 1 } }]
+          },
+          {
+            "id": "3:2",
+            "name": "Photo",
+            "type": "RECTANGLE",
+            "absoluteBoundingBox": { "x": 16, "y": 52, "width": 288, "height": 80 },
+            "fills": [
+              {
+                "type": "IMAGE",
+                "imageRef": "abc123ref",
+                "scaleMode": "FILL"
+              }
+            ]
+          },
+          {
+            "id": "3:3",
+            "name": "PrimaryButton",
+            "type": "INSTANCE",
+            "componentId": "9:9",
+            "absoluteBoundingBox": { "x": 16, "y": 144, "width": 160, "height": 40 },
+            "layoutGrow": 0,
+            "layoutAlign": "INHERIT",
+            "fills": [{ "type": "SOLID", "color": { "r": 0.05, "g": 0.6, "b": 1, "a": 1 } }]
+          }
+        ]
+      },
+      "components": {
+        "9:9": {
+          "key": "compkey",
+          "name": "Button / Primary",
+          "componentSetId": "9:1"
+        }
+      },
+      "componentSets": {
+        "9:1": { "name": "Button", "key": "setkey" }
+      }
+    }
+  }
+}

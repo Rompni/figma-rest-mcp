@@ -1,0 +1,57 @@
+{
+  "name": "figma-rest-mcp",
+  "version": "1.5.0",
+  "description": "Headless stdio MCP server for Figma over the REST API. Deterministic, CI-friendly, uses your PAT — not the official Figma MCP.",
+  "author": {
+    "name": "Andrés Felipe Navarro Gómez",
+    "url": "https://www.andresnavarro.dev"
+  },
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "figma-rest-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "plugin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "start:write": "FIGMA_ENABLE_WRITE_BRIDGE=1 tsx src/index.ts",
+    "build": "tsc",
+    "test": "tsx --test src/*.test.ts"
+  },
+  "keywords": [
+    "mcp",
+    "figma",
+    "figma-api",
+    "model-context-protocol",
+    "ai-agents",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rompni/figma-rest-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rompni/figma-rest-mcp/issues"
+  },
+  "homepage": "https://github.com/Rompni/figma-rest-mcp#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.0",
+    "dotenv": "^16.4.7",
+    "ws": "^8.21.3",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

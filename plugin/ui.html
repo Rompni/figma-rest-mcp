@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>figma-rest-mcp Bridge</title>
+    <style>
+      :root {
+        font-family: Inter, system-ui, sans-serif;
+        color: var(--figma-color-text, #1e1e1e);
+        background: var(--figma-color-bg, #fff);
+      }
+      body {
+        margin: 0;
+        padding: 12px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      h1 {
+        font-size: 13px;
+        margin: 0 0 8px;
+      }
+      label {
+        display: block;
+        margin: 8px 0 4px;
+        color: var(--figma-color-text-secondary, #6d6d6d);
+      }
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 8px;
+        border: 1px solid var(--figma-color-border, #d9d9d9);
+        border-radius: 4px;
+        background: var(--figma-color-bg, #fff);
+        color: inherit;
+      }
+      button {
+        margin-top: 10px;
+        width: 100%;
+        padding: 8px;
+        border: 0;
+        border-radius: 6px;
+        background: var(--figma-color-bg-brand, #0d99ff);
+        color: var(--figma-color-text-onbrand, #fff);
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: var(--figma-color-bg-secondary, #f1f1f1);
+        color: inherit;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #e03e2d;
+        flex: 0 0 8px;
+      }
+      .dot.on {
+        background: #14ae5c;
+      }
+      .muted {
+        color: var(--figma-color-text-secondary, #6d6d6d);
+      }
+      pre {
+        white-space: pre-wrap;
+        margin: 8px 0 0;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Canvas bridge</h1>
+    <div class="row">
+      <span class="dot" id="dot"></span>
+      <span id="state">Disconnected</span>
+    </div>
+    <div class="muted" id="file">Open a Figma Design file, then connect.</div>
+    <label for="port">Bridge port (127.0.0.1)</label>
+    <input id="port" type="number" value="3845" min="1" max="65535" />
+    <label for="token">FIGMA_BRIDGE_TOKEN</label>
+    <input id="token" type="password" autocomplete="off" placeholder="same token as the MCP process" />
+    <button id="connect" type="button">Connect</button>
+    <button id="disconnect" class="secondary" type="button">Disconnect</button>
+    <pre id="log" class="muted"></pre>
+    <script>
+      let socket = null;
+      let snapshot = {};
+      let reconnectTimer = null;
+      let wantConnected = false;
+
+      const $ = (id) => document.getElementById(id);
+
+      function log(message) {
+        $("log").textContent = message;
+      }
+
+      function setConnected(on, label) {
+        $("dot").classList.toggle("on", on);
+        $("state").textContent = label;
+      }
+
+      function renderFile() {
+        const name = snapshot.fileName || "(unsaved)";
+        const page = snapshot.pageName ? " · " + snapshot.pageName : "";
+        $("file").textContent = name + page + (snapshot.editorType ? " · " + snapshot.editorType : "");
+      }
+
+      parent.postMessage({ pluginMessage: { type: "snapshot" } }, "*");
+
+      window.onmessage = (event) => {
+        const msg = event.data && event.data.pluginMessage;
+        if (!msg) return;
+        if (msg.type === "snapshot") {
+          snapshot = msg.payload || {};
+          renderFile();
+          if (socket && socket.readyState === 1) {
+            socket.send(JSON.stringify({ type: "hello", token: $("token").value.trim(), ...snapshot }));
+          }
+        }
+        if (msg.type === "result" && socket && socket.readyState === 1) {
+          socket.send(JSON.stringify(msg));
+        }
+      };
+
+      function connect() {
+        wantConnected = true;
+        const token = $("token").value.trim();
+        const port = Number($("port").value) || 3845;
+        if (!token) {
+          log("Enter FIGMA_BRIDGE_TOKEN (must match the MCP env).");
+          return;
+        }
+        if (socket) {
+          socket.close();
+          socket = null;
+        }
+        const url = "ws://127.0.0.1:" + port + "/plugin?token=" + encodeURIComponent(token);
+        setConnected(false, "Connecting…");
+        log("Opening " + url.replace(token, "***"));
+        const ws = new WebSocket(url);
+        socket = ws;
+        ws.onopen = () => {
+          ws.send(JSON.stringify({ type: "hello", token, ...snapshot }));
+          parent.postMessage({ pluginMessage: { type: "snapshot" } }, "*");
+          setConnected(true, "Connected");
+          log("Plugin attached (allowlisted commands only). Keep this window open while the agent writes.");
+        };
+        ws.onmessage = (ev) => {
+          let payload;
+          try {
+            payload = JSON.parse(ev.data);
+          } catch {
+            return;
+          }
+          if (payload.type === "command" || payload.type === "run") {
+            parent.postMessage({ pluginMessage: payload }, "*");
+          }
+          if (payload.type === "hello_ok") {
+            setConnected(true, "Connected");
+          }
+          if (payload.type === "error") {
+            log(payload.error || "Bridge error");
+          }
+        };
+        ws.onclose = () => {
+          if (socket === ws) socket = null;
+          setConnected(false, "Disconnected");
+          if (wantConnected) {
+            log("Socket closed. Retrying in 2s… Is the MCP server running on this port?");
+            clearTimeout(reconnectTimer);
+            reconnectTimer = setTimeout(connect, 2000);
+          }
+        };
+        ws.onerror = () => {
+          log("WebSocket error. Check MCP is listening on 127.0.0.1:" + port + " with the same token.");
+        };
+      }
+
+      function disconnect() {
+        wantConnected = false;
+        clearTimeout(reconnectTimer);
+        if (socket) socket.close();
+        socket = null;
+        setConnected(false, "Disconnected");
+        log("Disconnected.");
+      }
+
+      $("connect").onclick = connect;
+      $("disconnect").onclick = disconnect;
+    </script>
+  </body>
+</html>

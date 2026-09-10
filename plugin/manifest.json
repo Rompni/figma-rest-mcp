@@ -1,0 +1,22 @@
+{
+  "name": "figma-rest-mcp Bridge",
+  "id": "figma-rest-mcp-canvas-bridge",
+  "api": "1.0.0",
+  "editorType": ["figma"],
+  "main": "code.js",
+  "ui": "ui.html",
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["none"],
+    "devAllowedDomains": [
+      "http://127.0.0.1",
+      "http://127.0.0.1:3845",
+      "http://localhost",
+      "http://localhost:3845",
+      "ws://127.0.0.1",
+      "ws://127.0.0.1:3845",
+      "ws://localhost",
+      "ws://localhost:3845"
+    ]
+  }
+}

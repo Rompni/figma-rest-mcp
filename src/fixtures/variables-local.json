@@ -1,0 +1,72 @@
+{
+  "status": 200,
+  "error": false,
+  "meta": {
+    "variableCollections": {
+      "VariableCollectionId:1:1": {
+        "id": "VariableCollectionId:1:1",
+        "name": "Primitives",
+        "key": "colkey",
+        "hiddenFromPublishing": false,
+        "remote": false,
+        "modes": [
+          { "modeId": "1:0", "name": "Light" },
+          { "modeId": "1:1", "name": "Dark" }
+        ],
+        "defaultModeId": "1:0",
+        "variableIds": ["VariableID:2:1", "VariableID:2:2", "VariableID:2:3"]
+      }
+    },
+    "variables": {
+      "VariableID:2:1": {
+        "id": "VariableID:2:1",
+        "name": "color/primary",
+        "key": "v1",
+        "variableCollectionId": "VariableCollectionId:1:1",
+        "resolvedType": "COLOR",
+        "valuesByMode": {
+          "1:0": { "r": 0.05, "g": 0.4, "b": 0.95, "a": 1 },
+          "1:1": { "r": 0.4, "g": 0.7, "b": 1, "a": 1 }
+        },
+        "remote": false,
+        "hiddenFromPublishing": false,
+        "scopes": ["ALL_FILLS", "FRAME_FILL", "SHAPE_FILL"],
+        "codeSyntax": { "WEB": "--color-primary" }
+      },
+      "VariableID:2:2": {
+        "id": "VariableID:2:2",
+        "name": "color/primary-alias",
+        "key": "v2",
+        "variableCollectionId": "VariableCollectionId:1:1",
+        "resolvedType": "COLOR",
+        "valuesByMode": {
+          "1:0": { "type": "VARIABLE_ALIAS", "id": "VariableID:2:1" },
+          "1:1": { "type": "VARIABLE_ALIAS", "id": "VariableID:2:1" }
+        },
+        "remote": false,
+        "scopes": ["ALL_FILLS"]
+      },
+      "VariableID:2:3": {
+        "id": "VariableID:2:3",
+        "name": "space/md",
+        "key": "v3",
+        "variableCollectionId": "VariableCollectionId:1:1",
+        "resolvedType": "FLOAT",
+        "valuesByMode": {
+          "1:0": 16,
+          "1:1": 16
+        },
+        "remote": false,
+        "scopes": ["GAP"]
+      },
+      "VariableID:2:4": {
+        "id": "VariableID:2:4",
+        "name": "hidden/secret",
+        "variableCollectionId": "VariableCollectionId:1:1",
+        "resolvedType": "STRING",
+        "valuesByMode": { "1:0": "nope" },
+        "hiddenFromPublishing": true
+      }
+    }
+  }
+}
